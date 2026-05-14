@@ -1,0 +1,316 @@
+
+<h2 class="sr-only">프로젝트 역할 분담 분석 및 일정 계획</h2>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.tb{background:none;border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:6px 14px;font-size:12px;color:var(--color-text-secondary);cursor:pointer;transition:.13s}
+.tb.on{background:var(--color-text-primary);color:var(--color-background-primary);border-color:transparent}
+.pn{display:none}.pn.on{display:block}
+/* role cards */
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.role-card{border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px 18px;background:var(--color-background-primary)}
+.role-card.warn{border-left:3px solid #E24B4A}
+.role-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.role-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0}
+.role-name{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.role-sub{font-size:11px;color:var(--color-text-tertiary);margin-top:1px}
+.task-list{display:flex;flex-direction:column;gap:4px;margin-top:8px}
+.task{font-size:12px;color:var(--color-text-secondary);padding:5px 8px;border-radius:6px;display:flex;align-items:flex-start;gap:6px;background:var(--color-background-secondary)}
+.task-bullet{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.task.new .task-bullet{background:#1D9E75}
+.task.existing .task-bullet{background:#888780}
+.task.critical .task-bullet{background:#E24B4A}
+.miss-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px}
+.miss-card{border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:14px 16px;background:var(--color-background-primary)}
+.miss-title{font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.miss-body{font-size:11.5px;color:var(--color-text-secondary);line-height:1.6}
+.sev{font-size:10px;padding:1px 7px;border-radius:4px;font-weight:500}
+.sev-h{background:#FCEBEB;color:#A32D2D}
+.sev-m{background:#FAEEDA;color:#854F0B}
+.sev-l{background:#EAF3DE;color:#3B6D11}
+/* gantt */
+.gantt-wrap{overflow-x:auto}
+.gantt{width:100%;border-collapse:collapse;font-size:12px;min-width:600px}
+.gantt th{padding:6px 8px;background:var(--color-background-secondary);font-weight:500;color:var(--color-text-secondary);border:.5px solid var(--color-border-tertiary);font-size:11px;white-space:nowrap}
+.gantt td{padding:5px 8px;border:.5px solid var(--color-border-tertiary);vertical-align:middle;color:var(--color-text-secondary);font-size:12px;white-space:nowrap}
+.gantt td:first-child{color:var(--color-text-primary);font-weight:500;min-width:140px;background:var(--color-background-secondary)}
+.bar{height:14px;border-radius:3px;display:inline-block}
+.ph-header{background:var(--color-background-tertiary)!important}
+.ph-header td{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-tertiary)!important}
+/* critical path */
+.cp-list{display:flex;flex-direction:column;gap:0}
+.cp-item{display:flex;align-items:stretch;gap:0}
+.cp-left{display:flex;flex-direction:column;align-items:center;gap:0;width:28px;flex-shrink:0}
+.cp-circle{width:22px;height:22px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0;background:var(--color-background-primary)}
+.cp-line{width:2px;flex:1;min-height:12px}
+.cp-content{flex:1;padding:0 0 18px 12px}
+.cp-title{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px}
+.cp-desc{font-size:12px;color:var(--color-text-secondary);line-height:1.6}
+.cp-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+.ctag{font-size:10px;padding:1px 7px;border-radius:4px;background:var(--color-background-secondary);color:var(--color-text-secondary)}
+</style>
+
+<div class="tabs">
+  <button class="tb on" onclick="sw(this,'p1')">① 역할별 세부 분석</button>
+  <button class="tb" onclick="sw(this,'p2')">② 누락 항목</button>
+  <button class="tb" onclick="sw(this,'p3')">③ 전체 일정</button>
+  <button class="tb" onclick="sw(this,'p4')">④ 시작 순서 (Critical Path)</button>
+</div>
+
+<!-- TAB 1 역할 세부 -->
+<div id="p1" class="pn on">
+  <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:14px">
+    <span style="display:inline-flex;align-items:center;gap:5px;margin-right:14px"><span style="width:8px;height:8px;border-radius:50%;background:#888780;display:inline-block"></span>기존 항목</span>
+    <span style="display:inline-flex;align-items:center;gap:5px;margin-right:14px"><span style="width:8px;height:8px;border-radius:50%;background:#1D9E75;display:inline-block"></span>추가 필요</span>
+    <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:#E24B4A;display:inline-block"></span>핵심 누락</span>
+  </div>
+  <div class="role-grid">
+
+    <div class="role-card">
+      <div class="role-head">
+        <div class="role-icon" style="background:#EEEDFE;color:#3C3489">AI</div>
+        <div><div class="role-name">① AI / 프롬프트 + 데이터</div><div class="role-sub">4번 프론트엔드 병행</div></div>
+      </div>
+      <div class="task-list">
+        <div class="task existing"><span class="task-bullet"></span>질환별 시스템 프롬프트 설계</div>
+        <div class="task existing"><span class="task-bullet"></span>PHQ-9 등 설문 매핑 · 점수→프롬프트 라우팅</div>
+        <div class="task existing"><span class="task-bullet"></span>A2A 자살위험 감지 로직</div>
+        <div class="task existing"><span class="task-bullet"></span>국립정신건강센터 자료 수집</div>
+        <div class="task new"><span class="task-bullet"></span>진단 에이전트 순환 구조 설계 (delta 기반 추세)</div>
+        <div class="task new"><span class="task-bullet"></span>노인 특화 페르소나 프롬프트 (회고·일상 주제)</div>
+        <div class="task new"><span class="task-bullet"></span>위기 감지 2단계 심각도 분류 로직 (score 0~1)</div>
+        <div class="task new"><span class="task-bullet"></span>Function Calling 정의 (보호자 알림·119 연결)</div>
+        <div class="task critical"><span class="task-bullet"></span>음성 비언어 신호 → 프롬프트 반영 규칙</div>
+      </div>
+    </div>
+
+    <div class="role-card">
+      <div class="role-head">
+        <div class="role-icon" style="background:#E1F5EE;color:#085041">BE</div>
+        <div><div class="role-name">② 백엔드 / API</div><div class="role-sub">FastAPI · Claude API · 세션 관리</div></div>
+      </div>
+      <div class="task-list">
+        <div class="task existing"><span class="task-bullet"></span>FastAPI 서버 구축</div>
+        <div class="task existing"><span class="task-bullet"></span>Claude API 연동 · REST 엔드포인트</div>
+        <div class="task existing"><span class="task-bullet"></span>상담 세션 관리</div>
+        <div class="task critical"><span class="task-bullet"></span>STT 처리 파이프라인 (Whisper / Clova / Azure)</div>
+        <div class="task critical"><span class="task-bullet"></span>TTS 응답 변환 (스피커 출력)</div>
+        <div class="task critical"><span class="task-bullet"></span>WebSocket 실시간 음성 스트리밍</div>
+        <div class="task new"><span class="task-bullet"></span>스피커 wake word · 연결 상태 관리 API</div>
+        <div class="task new"><span class="task-bullet"></span>비활성 타임아웃 감지 (15~30분) API</div>
+        <div class="task new"><span class="task-bullet"></span>보호자 알림 발송 API (SMS/이메일/FCM)</div>
+        <div class="task new"><span class="task-bullet"></span>음성 비언어 분석 API 연동 (음높이·속도)</div>
+        <div class="task new"><span class="task-bullet"></span>3포털 권한 분리 API (사용자/보호자/전문가)</div>
+      </div>
+    </div>
+
+    <div class="role-card">
+      <div class="role-head">
+        <div class="role-icon" style="background:#FAEEDA;color:#633806">DB</div>
+        <div><div class="role-name">③ DB / 보안 / 인프라</div><div class="role-sub">PostgreSQL × 2 · JWT · AES-256 · Celery</div></div>
+      </div>
+      <div class="task-list">
+        <div class="task existing"><span class="task-bullet"></span>PostgreSQL × 2 분리 (일반 DB / 민감 DB)</div>
+        <div class="task existing"><span class="task-bullet"></span>JWT 인증 · AES-256 암호화</div>
+        <div class="task existing"><span class="task-bullet"></span>Celery 스케줄러 · 배포</div>
+        <div class="task new"><span class="task-bullet"></span>음성 원본 저장소 (오브젝트 스토리지 · S3 등)</div>
+        <div class="task new"><span class="task-bullet"></span>음성 파일 접근 감사 로그 (audit log)</div>
+        <div class="task new"><span class="task-bullet"></span>음성 보관 기간 정책 (6개월 후 자동 삭제)</div>
+        <div class="task new"><span class="task-bullet"></span>진단 이력 테이블 설계 (timestamp·score·flags)</div>
+        <div class="task critical"><span class="task-bullet"></span>OTP/PIN 기반 인증 (비밀번호 대체)</div>
+        <div class="task new"><span class="task-bullet"></span>3포털 RBAC 권한 테이블</div>
+        <div class="task new"><span class="task-bullet"></span>비접속 감지 Celery Beat 태스크</div>
+        <div class="task new"><span class="task-bullet"></span>HTTPS · 개인정보처리방침 페이지 배포</div>
+      </div>
+    </div>
+
+    <div class="role-card warn">
+      <div class="role-head">
+        <div class="role-icon" style="background:#FAECE7;color:#712B13">FE</div>
+        <div><div class="role-name">④ 프론트엔드</div><div class="role-sub">React + TS · ① 역할과 병행 — 부하 과중 주의</div></div>
+      </div>
+      <div class="task-list">
+        <div class="task existing"><span class="task-bullet"></span>채팅 UI (React + TS)</div>
+        <div class="task existing"><span class="task-bullet"></span>자가검진 설문 UI · 위험도 결과 화면</div>
+        <div class="task existing"><span class="task-bullet"></span>대시보드 (사용자용)</div>
+        <div class="task critical"><span class="task-bullet"></span>보호자 포털 UI (주간 리포트 · 위기 알림)</div>
+        <div class="task critical"><span class="task-bullet"></span>전문가 / 지자체 포털 UI (고위험군 목록 · 개입 기록)</div>
+        <div class="task new"><span class="task-bullet"></span>스피커 연결 상태 표시 · 설정 UI</div>
+        <div class="task new"><span class="task-bullet"></span>감정 추이 차트 (장기 delta 시각화)</div>
+        <div class="task new"><span class="task-bullet"></span>노인용 온보딩 UI (큰 글씨 · 선택지 기반)</div>
+        <div class="task new"><span class="task-bullet"></span>텍스트 입력 폴백 UI (STT 실패 시 전환)</div>
+        <div class="task new"><span class="task-bullet"></span>위기 알림 모달 (severity 단계별 화면)</div>
+      </div>
+    </div>
+
+  </div>
+  <div style="background:var(--color-background-warning);border:.5px solid var(--color-border-warning);border-radius:var(--border-radius-md);padding:12px 14px;font-size:12px;color:var(--color-text-warning);margin-top:14px">
+    <strong>⚠ 부하 경고:</strong> ① AI/데이터 역할이 ④ 프론트엔드를 병행 중인데, STT/TTS/WebSocket이 누락된 상태에서 ②백엔드에 추가되면 ② 역할 부하가 폭증합니다. STT/TTS 처리는 별도 인원 배정 또는 ②와 ① 분담 재조정을 권장합니다.
+  </div>
+</div>
+
+<!-- TAB 2 누락 항목 -->
+<div id="p2" class="pn">
+  <div class="miss-grid">
+    <div class="miss-card" style="border-left:3px solid #E24B4A">
+      <div class="miss-title"><span class="sev sev-h">HIGH</span>STT / TTS 파이프라인</div>
+      <div class="miss-body">스피커 기반 서비스의 핵심인데 역할 분담 어디에도 없음. Whisper(OpenAI) 또는 Clova Speech(네이버) 선택 + TTS 엔진(Clova/Azure) 연동 필요. 백엔드 ②에 즉시 추가.</div>
+    </div>
+    <div class="miss-card" style="border-left:3px solid #E24B4A">
+      <div class="miss-title"><span class="sev sev-h">HIGH</span>WebSocket 실시간 통신</div>
+      <div class="miss-body">스피커 ↔ 서버 간 음성 스트리밍은 REST가 아닌 WebSocket 필수. 지연 없는 대화를 위해 FastAPI WebSocket 엔드포인트 설계가 필요. 현재 "REST 엔드포인트"만 명시돼 있음.</div>
+    </div>
+    <div class="miss-card" style="border-left:3px solid #E24B4A">
+      <div class="miss-title"><span class="sev sev-h">HIGH</span>보호자 / 전문가 포털 UI</div>
+      <div class="miss-body">프론트엔드 항목에 사용자용 UI만 있음. 보호자 주간 리포트, 위기 알림 페이지, 전문가용 고위험군 대시보드가 완전히 누락. 3포털이 핵심 차별점인데 개발 계획 없는 상태.</div>
+    </div>
+    <div class="miss-card" style="border-left:3px solid #BA7517">
+      <div class="miss-title"><span class="sev sev-m">MEDIUM</span>알림 시스템</div>
+      <div class="miss-body">보호자에게 위기 알림·안부 알림 발송하는 시스템 없음. SMS(coolSMS 등), 이메일, 앱 푸시(FCM) 중 선택 필요. Celery로 비동기 처리 가능하지만 설계가 명시돼야 함.</div>
+    </div>
+    <div class="miss-card" style="border-left:3px solid #BA7517">
+      <div class="miss-title"><span class="sev sev-m">MEDIUM</span>음성 비언어 분석</div>
+      <div class="miss-body">서비스 핵심 차별점 중 하나. pyAudioAnalysis / librosa로 음높이·속도·음량 특성 추출 후 진단 에이전트에 투입하는 파이프라인 필요. 현재 어떤 역할에도 없음.</div>
+    </div>
+    <div class="miss-card" style="border-left:3px solid #BA7517">
+      <div class="miss-title"><span class="sev sev-m">MEDIUM</span>비접속 자동 감지</div>
+      <div class="miss-body">3일+ 스피커 미사용 시 보호자 알림 발송 로직. Celery Beat 스케줄러로 구현 가능하지만 DB 설계(마지막 접속 시각 저장)와 알림 임계값 정책이 명시돼야 함.</div>
+    </div>
+    <div class="miss-card" style="border-left:3px solid #BA7517">
+      <div class="miss-title"><span class="sev sev-m">MEDIUM</span>OTP/PIN 인증</div>
+      <div class="miss-body">노인용 서비스에서 일반 비밀번호는 취약점. 전화번호 기반 OTP 또는 PIN 4~6자리 인증으로 교체 필요. DB/보안 ③에 추가. 세션 토큰 만료 시간도 일반보다 길게 설정.</div>
+    </div>
+    <div class="miss-card" style="border-left:3px solid #3B6D11">
+      <div class="miss-title"><span class="sev sev-l">LOW</span>음성 원본 스토리지</div>
+      <div class="miss-body">음성 원본 저장 정책(S3 또는 MinIO), 암호화(AES-256), 감사 로그, 6개월 자동 삭제 Celery 태스크. 개인정보보호법상 생체정보 처리 별도 동의 및 보관 기간 명시 의무.</div>
+    </div>
+    <div class="miss-card" style="border-left:3px solid #3B6D11">
+      <div class="miss-title"><span class="sev sev-l">LOW</span>텍스트 폴백 UI</div>
+      <div class="miss-body">STT 실패(보청기·발음 불명확) 시 자동으로 텍스트 입력 모드 전환. 노인 접근성의 핵심. 프론트엔드 ④에 추가. 큰 버튼 + 단순 입력 UI 필요.</div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 3 전체 일정 -->
+<div id="p3" class="pn">
+  <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:14px">4인 기준 약 12주 일정 (주 단위). 병렬 진행 표시.</div>
+  <div class="gantt-wrap">
+    <table class="gantt">
+      <thead>
+        <tr>
+          <th>태스크</th>
+          <th>역할</th>
+          <th style="min-width:280px">W1&nbsp;&nbsp;W2&nbsp;&nbsp;W3&nbsp;&nbsp;W4&nbsp;&nbsp;W5&nbsp;&nbsp;W6&nbsp;&nbsp;W7&nbsp;&nbsp;W8&nbsp;&nbsp;W9&nbsp;&nbsp;W10&nbsp;W11&nbsp;W12</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="ph-header"><td colspan="3">Phase 1 · 기반 구축 (1~3주)</td></tr>
+        <tr><td>DB 스키마 설계</td><td>③</td><td><span class="bar" style="width:50px;margin-left:0px;background:#639922"></span></td></tr>
+        <tr><td>FastAPI 서버 + WebSocket</td><td>②</td><td><span class="bar" style="width:70px;margin-left:0px;background:#1D9E75"></span></td></tr>
+        <tr><td>JWT + OTP 인증</td><td>③</td><td><span class="bar" style="width:50px;margin-left:22px;background:#639922"></span></td></tr>
+        <tr><td>초기 프롬프트 설계</td><td>①</td><td><span class="bar" style="width:70px;margin-left:0px;background:#534AB7"></span></td></tr>
+        <tr><td>STT / TTS 파이프라인</td><td>②</td><td><span class="bar" style="width:70px;margin-left:22px;background:#E24B4A"></span></td></tr>
+
+        <tr class="ph-header"><td colspan="3">Phase 2 · 핵심 기능 (4~7주)</td></tr>
+        <tr><td>Claude API + 세션 관리</td><td>②</td><td><span class="bar" style="width:90px;margin-left:66px;background:#1D9E75"></span></td></tr>
+        <tr><td>진단 에이전트 구현</td><td>①</td><td><span class="bar" style="width:90px;margin-left:66px;background:#534AB7"></span></td></tr>
+        <tr><td>위기 감지 2단계 로직</td><td>①②</td><td><span class="bar" style="width:70px;margin-left:88px;background:#BA7517"></span></td></tr>
+        <tr><td>사용자 포털 UI</td><td>④</td><td><span class="bar" style="width:90px;margin-left:66px;background:#D85A30"></span></td></tr>
+        <tr><td>음성 비언어 분석</td><td>②</td><td><span class="bar" style="width:70px;margin-left:88px;background:#E24B4A"></span></td></tr>
+        <tr><td>음성 스토리지 + 암호화</td><td>③</td><td><span class="bar" style="width:70px;margin-left:66px;background:#639922"></span></td></tr>
+
+        <tr class="ph-header"><td colspan="3">Phase 3 · 포털 & 연동 (8~10주)</td></tr>
+        <tr><td>보호자 포털 UI</td><td>④</td><td><span class="bar" style="width:70px;margin-left:154px;background:#D85A30"></span></td></tr>
+        <tr><td>전문가 포털 UI</td><td>④</td><td><span class="bar" style="width:70px;margin-left:176px;background:#D85A30"></span></td></tr>
+        <tr><td>알림 시스템 (SMS/FCM)</td><td>②③</td><td><span class="bar" style="width:70px;margin-left:154px;background:#1D9E75"></span></td></tr>
+        <tr><td>비접속 감지 Celery Beat</td><td>③</td><td><span class="bar" style="width:50px;margin-left:176px;background:#639922"></span></td></tr>
+        <tr><td>Function Calling (119 연결)</td><td>①②</td><td><span class="bar" style="width:50px;margin-left:176px;background:#534AB7"></span></td></tr>
+
+        <tr class="ph-header"><td colspan="3">Phase 4 · 통합 테스트 & 배포 (11~12주)</td></tr>
+        <tr><td>전체 통합 테스트</td><td>전원</td><td><span class="bar" style="width:46px;margin-left:220px;background:#888780"></span></td></tr>
+        <tr><td>보안 점검 · HTTPS 배포</td><td>③</td><td><span class="bar" style="width:46px;margin-left:242px;background:#E24B4A"></span></td></tr>
+        <tr><td>노인 사용성 테스트</td><td>전원</td><td><span class="bar" style="width:46px;margin-left:242px;background:#888780"></span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TAB 4 Critical Path -->
+<div id="p4" class="pn">
+  <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:18px">뭐부터 시작해야 하는지 — 이전 단계가 완료돼야 다음이 가능한 순서.</div>
+  <div class="cp-list">
+
+    <div class="cp-item">
+      <div class="cp-left"><div class="cp-circle" style="border-color:#534AB7;color:#534AB7">1</div><div class="cp-line" style="background:#534AB7;opacity:.25"></div></div>
+      <div class="cp-content">
+        <div class="cp-title">DB 스키마 설계 + FastAPI 기본 서버</div>
+        <div class="cp-desc">모든 기능의 토대. 사용자 테이블, 세션 테이블, 진단 이력 테이블, RBAC 권한 테이블을 먼저 확정해야 이후 모든 API가 흔들리지 않음. ③④ 동시 시작.</div>
+        <div class="cp-tags"><span class="ctag">③ DB 설계</span><span class="ctag">② FastAPI 서버</span><span class="ctag">1~2주</span></div>
+      </div>
+    </div>
+
+    <div class="cp-item">
+      <div class="cp-left"><div class="cp-circle" style="border-color:#E24B4A;color:#E24B4A">2</div><div class="cp-line" style="background:#E24B4A;opacity:.25"></div></div>
+      <div class="cp-content">
+        <div class="cp-title">STT / TTS 파이프라인 + WebSocket 연결</div>
+        <div class="cp-desc">스피커 기반 서비스의 핵심 파이프라인. 음성→텍스트→LLM→텍스트→음성 흐름이 동작해야 나머지 모든 AI 기능을 테스트할 수 있음. 이게 없으면 Claude API 연동 테스트도 불가.</div>
+        <div class="cp-tags"><span class="ctag">② STT/TTS</span><span class="ctag">② WebSocket</span><span class="ctag">2~3주</span></div>
+      </div>
+    </div>
+
+    <div class="cp-item">
+      <div class="cp-left"><div class="cp-circle" style="border-color:#1D9E75;color:#1D9E75">3</div><div class="cp-line" style="background:#1D9E75;opacity:.25"></div></div>
+      <div class="cp-content">
+        <div class="cp-title">OTP/PIN 인증 + Claude API 기본 연동</div>
+        <div class="cp-desc">사용자 인증 없이는 세션 관리가 불가. 노인 친화적 OTP 인증 먼저 구현. 동시에 Claude API 기본 연동 테스트(프롬프트 in → 응답 out). 이 단계에서 첫 번째 "말하고 대답 듣기" 데모 가능.</div>
+        <div class="cp-tags"><span class="ctag">③ OTP 인증</span><span class="ctag">② Claude API</span><span class="ctag">① 기본 프롬프트</span><span class="ctag">3~4주</span></div>
+      </div>
+    </div>
+
+    <div class="cp-item">
+      <div class="cp-left"><div class="cp-circle" style="border-color:#534AB7;color:#534AB7">4</div><div class="cp-line" style="background:#534AB7;opacity:.25"></div></div>
+      <div class="cp-content">
+        <div class="cp-title">진단 에이전트 + 프롬프트 라우팅 순환 구조</div>
+        <div class="cp-desc">PHQ-9 점수 → 진단 → 프롬프트 조정 → 대화 → 요약 → 재진단의 순환 루프. 이게 완성돼야 "AI가 상태에 맞게 대화한다"는 핵심 가치 제안이 작동함. 병행: 사용자 UI MVP.</div>
+        <div class="cp-tags"><span class="ctag">① 진단 에이전트</span><span class="ctag">④ 사용자 UI</span><span class="ctag">4~6주</span></div>
+      </div>
+    </div>
+
+    <div class="cp-item">
+      <div class="cp-left"><div class="cp-circle" style="border-color:#BA7517;color:#BA7517">5</div><div class="cp-line" style="background:#BA7517;opacity:.25"></div></div>
+      <div class="cp-content">
+        <div class="cp-title">위기 감지 2단계 로직 + Function Calling</div>
+        <div class="cp-desc">score 계산 → 분기(확인 질문 / 보호자 알림 / 119 연결). 법적·윤리적으로 반드시 오탐 방지 로직이 있어야 서비스 공개 가능. 이 기능 없이 배포하면 안 됨.</div>
+        <div class="cp-tags"><span class="ctag">① 위기 로직</span><span class="ctag">② Function Calling</span><span class="ctag">6~8주</span></div>
+      </div>
+    </div>
+
+    <div class="cp-item">
+      <div class="cp-left"><div class="cp-circle" style="border-color:#D85A30;color:#D85A30">6</div><div class="cp-line" style="background:#D85A30;opacity:.25"></div></div>
+      <div class="cp-content">
+        <div class="cp-title">보호자 포털 + 알림 시스템</div>
+        <div class="cp-desc">경쟁사 6곳 전무한 차별점. B2G 영업 시 "보호자가 확인할 수 있다"는 데모가 핵심. 주간 리포트 UI + SMS/FCM 알림 발송. 비접속 Celery Beat 태스크도 여기서 완성.</div>
+        <div class="cp-tags"><span class="ctag">④ 보호자 포털</span><span class="ctag">②③ 알림</span><span class="ctag">8~10주</span></div>
+      </div>
+    </div>
+
+    <div class="cp-item">
+      <div class="cp-left"><div class="cp-circle" style="border-color:#888780;color:#888780">7</div><div class="cp-line" style="background:none"></div></div>
+      <div class="cp-content">
+        <div class="cp-title">전문가 포털 + 통합 테스트 + 배포</div>
+        <div class="cp-desc">지자체 공무원·복지사 대시보드. 고위험군 목록, 개입 기록, 보고서 자동 생성. 이후 전원이 참여하는 통합 테스트(실제 노인 사용자 대상 포함) → HTTPS 배포 → 지자체 데모.</div>
+        <div class="cp-tags"><span class="ctag">④ 전문가 포털</span><span class="ctag">③ 보안·배포</span><span class="ctag">10~12주</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function sw(btn,id){
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.pn').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById(id).classList.add('on');
+}
+</script>

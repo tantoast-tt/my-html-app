@@ -1,1036 +1,316 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3주 스프린트 계획 — AI 친구 서비스</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<h2 class="sr-only">프로젝트 역할 분담 분석 및 일정 계획</h2>
 <style>
-:root {
-  --bg: #f5f4f0;
-  --surface: #ffffff;
-  --surface2: #f0efe9;
-  --border: #e2e0d8;
-  --border2: #ccc9be;
-  --text: #1c1b18;
-  --text2: #5a5850;
-  --text3: #9c9888;
-  --accent: #1a56db;
-  --accent-bg: #eef3fd;
-  --teal: #0c7a6a;
-  --teal-bg: #e6f5f2;
-  --amber: #b45309;
-  --amber-bg: #fef3e2;
-  --coral: #c7341e;
-  --coral-bg: #fdecea;
-  --purple: #6d28d9;
-  --purple-bg: #f0ebff;
-  --green: #15803d;
-  --green-bg: #eaf5ee;
-  --gray: #6b7280;
-  --w1: #dbeafe;
-  --w1b: #1e40af;
-  --w2: #d1fae5;
-  --w2b: #065f46;
-  --w3: #fef3c7;
-  --w3b: #92400e;
-  --nav: 220px;
-}
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; font-weight: 300; font-size: 14px; line-height: 1.7; }
-
-/* ── HEADER ── */
-.topbar {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(245,244,240,.92); backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-  padding: 0 32px; height: 52px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.topbar-brand { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--text); letter-spacing: .02em; }
-.topbar-brand span { color: var(--accent); }
-.topbar-meta { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); display: flex; gap: 20px; }
-.topbar-meta b { color: var(--text2); font-weight: 500; }
-
-/* ── LAYOUT ── */
-.layout { display: grid; grid-template-columns: var(--nav) 1fr; padding-top: 52px; min-height: 100vh; }
-
-/* ── SIDEBAR ── */
-.sidebar {
-  position: sticky; top: 52px; height: calc(100vh - 52px);
-  overflow-y: auto; background: var(--surface);
-  border-right: 1px solid var(--border);
-  padding: 28px 18px 28px 24px;
-}
-.sidebar::-webkit-scrollbar { width: 0; }
-.sb-section { font-family: 'DM Mono', monospace; font-size: 9.5px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text3); margin: 18px 0 8px 2px; }
-.sb-section:first-child { margin-top: 0; }
-.nav-link { display: flex; align-items: center; gap: 9px; padding: 7px 10px; border-radius: 6px; text-decoration: none; color: var(--text2); font-size: 12.5px; transition: .12s; }
-.nav-link:hover { background: var(--surface2); color: var(--text); }
-.nav-link.active { background: var(--accent-bg); color: var(--accent); font-weight: 500; }
-.nav-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-.sb-hr { height: 1px; background: var(--border); margin: 10px 0; }
-
-/* week pill in sidebar */
-.week-pill { font-family: 'DM Mono', monospace; font-size: 10px; padding: 2px 8px; border-radius: 10px; margin-left: auto; font-weight: 500; }
-.wp1 { background: var(--w1); color: var(--w1b); }
-.wp2 { background: var(--w2); color: var(--w2b); }
-.wp3 { background: var(--w3); color: var(--w3b); }
-
-/* ── CONTENT ── */
-.content { padding: 40px 56px 100px; min-width: 0; }
-.section { margin-bottom: 64px; scroll-margin-top: 68px; }
-.sec-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 6px; }
-h2 { font-size: 22px; font-weight: 500; color: var(--text); margin-bottom: 22px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
-h3 { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 12px; }
-
-/* ── OVERVIEW CARDS ── */
-.overview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
-.ov-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
-.ov-val { font-size: 28px; font-weight: 500; color: var(--text); line-height: 1; font-family: 'DM Mono', monospace; }
-.ov-lbl { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; margin-top: 5px; }
-
-/* ── WEEK HEADER ── */
-.week-header { border-radius: 10px; padding: 18px 22px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px; }
-.wh-num { font-family: 'DM Mono', monospace; font-size: 28px; font-weight: 500; line-height: 1; opacity: .6; }
-.wh-title { font-size: 16px; font-weight: 500; }
-.wh-sub { font-size: 12px; opacity: .75; margin-top: 2px; }
-.wh-goal { margin-left: auto; font-size: 12px; background: rgba(255,255,255,.55); border-radius: 6px; padding: 8px 12px; text-align: right; }
-.wh-goal strong { display: block; font-size: 13px; font-weight: 500; }
-
-.w1-bg { background: #dbeafe; color: #1e3a8a; }
-.w2-bg { background: #d1fae5; color: #064e3b; }
-.w3-bg { background: #fef3c7; color: #78350f; }
-
-/* ── TASK TABLE ── */
-.task-table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
-.task-table { width: 100%; border-collapse: collapse; }
-.task-table th { font-size: 10.5px; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; color: var(--text3); font-family: 'DM Mono', monospace; padding: 10px 14px; background: var(--surface2); border-bottom: 1px solid var(--border); text-align: left; }
-.task-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: top; font-size: 13px; color: var(--text2); }
-.task-table tr:last-child td { border-bottom: none; }
-.task-table tr:hover td { background: var(--surface2); }
-.task-table td:first-child { color: var(--text); font-weight: 400; min-width: 180px; }
-.task-table td:nth-child(2) { min-width: 68px; }
-
-/* role badge */
-.role { display: inline-block; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
-.r1 { background: var(--purple-bg); color: var(--purple); }
-.r2 { background: var(--teal-bg); color: var(--teal); }
-.r3 { background: var(--amber-bg); color: var(--amber); }
-.r4 { background: var(--coral-bg); color: var(--coral); }
-.rAll { background: var(--surface2); color: var(--text2); }
-
-/* priority badge */
-.pri { display: inline-block; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 4px; }
-.p-must { background: #fde8e8; color: #9b1c1c; }
-.p-high { background: #fef3cd; color: #854d0e; }
-.p-med  { background: var(--green-bg); color: var(--green); }
-
-/* day badge */
-.day { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); white-space: nowrap; }
-
-/* deliverable list */
-.deliv { font-size: 12px; color: var(--text2); margin-top: 4px; }
-.deliv li { list-style: none; padding-left: 12px; position: relative; line-height: 1.6; }
-.deliv li::before { content: '›'; position: absolute; left: 0; color: var(--text3); }
-
-/* ── GANTT ── */
-.gantt-section { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
-.gantt-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-.gantt-table th { padding: 9px 12px; background: var(--surface2); font-size: 10px; font-weight: 500; color: var(--text3); border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); font-family: 'DM Mono', monospace; text-align: center; white-space: nowrap; }
-.gantt-table th:first-child { text-align: left; min-width: 140px; }
-.gantt-table th:nth-child(2) { min-width: 52px; }
-.gantt-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); vertical-align: middle; }
-.gantt-table td:first-child { color: var(--text); font-weight: 400; font-size: 12.5px; background: var(--surface2); }
-.gantt-table td:nth-child(2) { text-align: center; }
-.gantt-table tr:last-child td { border-bottom: none; }
-.bar-cell { padding: 6px 8px !important; min-width: 36px; }
-.bar { height: 12px; border-radius: 3px; display: block; }
-.bar-full { width: 100%; }
-.bar-half { width: 50%; }
-.bar-third { width: 33%; }
-.bar-two3 { width: 67%; }
-.g-cat td { background: var(--bg) !important; font-family: 'DM Mono', monospace; font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--text3) !important; padding: 5px 12px !important; font-weight: 500 !important; }
-.g-w1 { background: #bfdbfe; }
-.g-w2 { background: #6ee7b7; }
-.g-w3 { background: #fcd34d; }
-.g-gray { background: var(--border2); }
-
-/* ── CALLOUT ── */
-.callout { border-radius: 8px; padding: 12px 16px; margin: 12px 0; font-size: 13px; line-height: 1.7; }
-.co-info { background: var(--accent-bg); border: 1px solid rgba(26,86,219,.18); color: #1e3a8a; }
-.co-warn { background: var(--amber-bg); border: 1px solid rgba(180,83,9,.18); color: #78350f; }
-.co-danger { background: var(--coral-bg); border: 1px solid rgba(199,52,30,.18); color: #7f1d1d; }
-.co-green { background: var(--green-bg); border: 1px solid rgba(21,128,61,.18); color: #14532d; }
-
-/* ── CHECKLIST ── */
-.check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.check-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
-.check-title { font-size: 12.5px; font-weight: 500; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-.check-list { list-style: none; }
-.check-list li { font-size: 12px; color: var(--text2); padding: 4px 0; padding-left: 18px; position: relative; line-height: 1.5; }
-.check-list li::before { content: '□'; position: absolute; left: 0; color: var(--text3); font-size: 11px; }
-
-/* ── RISK TABLE ── */
-.risk-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-.risk-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; border-top: 3px solid; }
-.risk-title { font-size: 12.5px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
-.risk-body { font-size: 12px; color: var(--text2); line-height: 1.6; }
-.risk-sol { font-size: 11.5px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); color: var(--text3); }
-
-/* ── FOOTER ── */
-footer { border-top: 1px solid var(--border); padding: 20px 56px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); display: flex; justify-content: space-between; max-width: 100%; }
-
-/* ── PRINT ── */
-@media print {
-  .topbar, .sidebar { display: none; }
-  .layout { grid-template-columns: 1fr; }
-  .content { padding: 20px 30px; }
-  .section { page-break-inside: avoid; }
-}
+*{box-sizing:border-box;margin:0;padding:0}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.tb{background:none;border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:6px 14px;font-size:12px;color:var(--color-text-secondary);cursor:pointer;transition:.13s}
+.tb.on{background:var(--color-text-primary);color:var(--color-background-primary);border-color:transparent}
+.pn{display:none}.pn.on{display:block}
+/* role cards */
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.role-card{border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px 18px;background:var(--color-background-primary)}
+.role-card.warn{border-left:3px solid #E24B4A}
+.role-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.role-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0}
+.role-name{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.role-sub{font-size:11px;color:var(--color-text-tertiary);margin-top:1px}
+.task-list{display:flex;flex-direction:column;gap:4px;margin-top:8px}
+.task{font-size:12px;color:var(--color-text-secondary);padding:5px 8px;border-radius:6px;display:flex;align-items:flex-start;gap:6px;background:var(--color-background-secondary)}
+.task-bullet{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.task.new .task-bullet{background:#1D9E75}
+.task.existing .task-bullet{background:#888780}
+.task.critical .task-bullet{background:#E24B4A}
+.miss-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px}
+.miss-card{border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:14px 16px;background:var(--color-background-primary)}
+.miss-title{font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.miss-body{font-size:11.5px;color:var(--color-text-secondary);line-height:1.6}
+.sev{font-size:10px;padding:1px 7px;border-radius:4px;font-weight:500}
+.sev-h{background:#FCEBEB;color:#A32D2D}
+.sev-m{background:#FAEEDA;color:#854F0B}
+.sev-l{background:#EAF3DE;color:#3B6D11}
+/* gantt */
+.gantt-wrap{overflow-x:auto}
+.gantt{width:100%;border-collapse:collapse;font-size:12px;min-width:600px}
+.gantt th{padding:6px 8px;background:var(--color-background-secondary);font-weight:500;color:var(--color-text-secondary);border:.5px solid var(--color-border-tertiary);font-size:11px;white-space:nowrap}
+.gantt td{padding:5px 8px;border:.5px solid var(--color-border-tertiary);vertical-align:middle;color:var(--color-text-secondary);font-size:12px;white-space:nowrap}
+.gantt td:first-child{color:var(--color-text-primary);font-weight:500;min-width:140px;background:var(--color-background-secondary)}
+.bar{height:14px;border-radius:3px;display:inline-block}
+.ph-header{background:var(--color-background-tertiary)!important}
+.ph-header td{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-tertiary)!important}
+/* critical path */
+.cp-list{display:flex;flex-direction:column;gap:0}
+.cp-item{display:flex;align-items:stretch;gap:0}
+.cp-left{display:flex;flex-direction:column;align-items:center;gap:0;width:28px;flex-shrink:0}
+.cp-circle{width:22px;height:22px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0;background:var(--color-background-primary)}
+.cp-line{width:2px;flex:1;min-height:12px}
+.cp-content{flex:1;padding:0 0 18px 12px}
+.cp-title{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px}
+.cp-desc{font-size:12px;color:var(--color-text-secondary);line-height:1.6}
+.cp-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+.ctag{font-size:10px;padding:1px 7px;border-radius:4px;background:var(--color-background-secondary);color:var(--color-text-secondary)}
 </style>
-</head>
-<body>
 
-<!-- TOPBAR -->
-<header class="topbar">
-  <div class="topbar-brand">AI 친구 서비스 <span>/ 3주 스프린트</span></div>
-  <div class="topbar-meta">
-    <span><b>인원</b> 4명</span>
-    <span><b>기간</b> 21일</span>
-    <span><b>목표</b> 지자체 데모 가능 버전</span>
-    <span><b>플랫폼</b> 스피커 + 웹 3포털</span>
-  </div>
-</header>
-
-<div class="layout">
-
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sb-section">전체 개요</div>
-    <a href="#overview" class="nav-link active"><span class="nav-dot" style="background:var(--text3)"></span>요약 & 인원 구성</a>
-    <a href="#gantt" class="nav-link"><span class="nav-dot" style="background:var(--text3)"></span>전체 간트차트</a>
-
-    <div class="sb-hr"></div>
-    <div class="sb-section">주차별 계획</div>
-    <a href="#week1" class="nav-link"><span class="nav-dot" style="background:var(--w1b)"></span>1주차 기반 구축 <span class="week-pill wp1">W1</span></a>
-    <a href="#week2" class="nav-link"><span class="nav-dot" style="background:var(--w2b)"></span>2주차 핵심 기능 <span class="week-pill wp2">W2</span></a>
-    <a href="#week3" class="nav-link"><span class="nav-dot" style="background:var(--w3b)"></span>3주차 포털 & 배포 <span class="week-pill wp3">W3</span></a>
-
-    <div class="sb-hr"></div>
-    <div class="sb-section">부록</div>
-    <a href="#checklist" class="nav-link"><span class="nav-dot" style="background:var(--green)"></span>완료 체크리스트</a>
-    <a href="#risk" class="nav-link"><span class="nav-dot" style="background:var(--coral)"></span>리스크 & 대응</a>
-  </aside>
-
-  <!-- MAIN -->
-  <main class="content">
-
-    <!-- 0. 개요 -->
-    <section id="overview" class="section">
-      <div class="sec-label">Overview</div>
-      <h2>프로젝트 개요 & 인원 구성</h2>
-
-      <div class="overview-grid">
-        <div class="ov-card" style="border-top:3px solid var(--accent)">
-          <div class="ov-val">3주</div>
-          <div class="ov-lbl">전체 기간 · 21일</div>
-        </div>
-        <div class="ov-card" style="border-top:3px solid var(--teal)">
-          <div class="ov-val">4명</div>
-          <div class="ov-lbl">참여 인원</div>
-        </div>
-        <div class="ov-card" style="border-top:3px solid var(--amber)">
-          <div class="ov-val">MVP</div>
-          <div class="ov-lbl">목표 산출물</div>
-        </div>
-        <div class="ov-card" style="border-top:3px solid var(--coral)">
-          <div class="ov-val">Demo</div>
-          <div class="ov-lbl">3주차 지자체 데모</div>
-        </div>
-      </div>
-
-      <!-- 역할 구성 -->
-      <h3>역할별 담당 범위 (3주 기준 재조정)</h3>
-      <div class="task-table-wrap">
-        <table class="task-table">
-          <thead>
-            <tr>
-              <th>역할</th>
-              <th>담당자</th>
-              <th>1주차 핵심</th>
-              <th>2주차 핵심</th>
-              <th>3주차 핵심</th>
-              <th>주의사항</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span class="role r1">① AI / 프롬프트</span></td>
-              <td style="color:var(--text3);font-size:12px">1명</td>
-              <td>초기 프롬프트 설계<br>PHQ-9 매핑·라우팅<br>페르소나 정의</td>
-              <td>진단 에이전트 순환<br>위기 감지 로직<br>Function Calling 정의</td>
-              <td>프롬프트 튜닝<br>이상 케이스 대응<br>통합 테스트 참여</td>
-              <td style="color:var(--coral);font-size:12px">프론트 병행 부담<br>→ 3주차에만 FE 지원</td>
-            </tr>
-            <tr>
-              <td><span class="role r2">② 백엔드 / API</span></td>
-              <td style="color:var(--text3);font-size:12px">1명</td>
-              <td>FastAPI + WebSocket<br>STT/TTS 파이프라인<br>Claude API 기본 연동</td>
-              <td>세션 관리<br>음성 비언어 분석<br>알림 API (SMS/FCM)</td>
-              <td>3포털 API 완성<br>비접속 감지<br>부하 테스트</td>
-              <td style="color:var(--amber);font-size:12px">STT/TTS 엔진 선택이<br>1일차 최우선 결정</td>
-            </tr>
-            <tr>
-              <td><span class="role r3">③ DB / 보안 / 인프라</span></td>
-              <td style="color:var(--text3);font-size:12px">1명</td>
-              <td>DB 스키마 확정<br>OTP/PIN 인증<br>PostgreSQL × 2 구성</td>
-              <td>음성 스토리지<br>AES-256·감사로그<br>RBAC 권한 테이블</td>
-              <td>HTTPS 배포<br>Celery Beat<br>보안 점검</td>
-              <td style="color:var(--text3);font-size:12px">1일차 스키마 확정이<br>전체 일정 좌우</td>
-            </tr>
-            <tr>
-              <td><span class="role r4">④ 프론트엔드</span></td>
-              <td style="color:var(--text3);font-size:12px">1명<br><span style="color:var(--text3);font-size:11px">(+① 3주차 지원)</span></td>
-              <td>React 프로젝트 셋업<br>온보딩 UI (큰글씨)<br>설문 UI</td>
-              <td>사용자 포털 UI<br>감정 추이 차트<br>스피커 연결 상태 UI</td>
-              <td>보호자 포털 UI<br>전문가 포털 UI<br>위기 알림 모달</td>
-              <td style="color:var(--coral);font-size:12px">보호자·전문가 포털이<br>3주차에 몰림 → 위험</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="callout co-warn">
-        <strong>⚠ 3주 일정 전제 조건:</strong> 매일 10시 스탠드업(15분) + 매주 금요일 회고(30분). DB 스키마는 <strong>1일차 오전에 확정</strong>해야 전체 일정이 유지됨. STT 엔진 선택(Whisper vs Clova Speech)도 1일차 결정 필요. 지연 없이 진행 시 3주 말 데모 버전 가능.
-      </div>
-    </section>
-
-    <!-- 1. 간트 차트 -->
-    <section id="gantt" class="section">
-      <div class="sec-label">Gantt Chart</div>
-      <h2>전체 간트 차트 (21일)</h2>
-
-      <div class="gantt-section">
-        <table class="gantt-table">
-          <thead>
-            <tr>
-              <th>태스크</th>
-              <th>역할</th>
-              <th class="bar-cell">D1</th>
-              <th class="bar-cell">D2</th>
-              <th class="bar-cell">D3</th>
-              <th class="bar-cell">D4</th>
-              <th class="bar-cell">D5</th>
-              <th class="bar-cell">D6</th>
-              <th class="bar-cell">D7</th>
-              <th class="bar-cell">D8</th>
-              <th class="bar-cell">D9</th>
-              <th class="bar-cell">D10</th>
-              <th class="bar-cell">D11</th>
-              <th class="bar-cell">D12</th>
-              <th class="bar-cell">D13</th>
-              <th class="bar-cell">D14</th>
-              <th class="bar-cell">D15</th>
-              <th class="bar-cell">D16</th>
-              <th class="bar-cell">D17</th>
-              <th class="bar-cell">D18</th>
-              <th class="bar-cell">D19</th>
-              <th class="bar-cell">D20</th>
-              <th class="bar-cell">D21</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- W1 -->
-            <tr class="g-cat"><td colspan="23">Week 1 · 기반 구축 (D1~D7)</td></tr>
-            <tr>
-              <td>DB 스키마 설계 & 확정</td>
-              <td><span class="role r3">③</span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-            <tr>
-              <td>PostgreSQL × 2 분리 구성</td>
-              <td><span class="role r3">③</span></td>
-              <td class="bar-cell"></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-            <tr>
-              <td>OTP/PIN 인증 구현</td>
-              <td><span class="role r3">③</span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-            <tr>
-              <td>FastAPI 서버 + WebSocket</td>
-              <td><span class="role r2">②</span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-            <tr>
-              <td>STT / TTS 파이프라인</td>
-              <td><span class="role r2">②</span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-            <tr>
-              <td>Claude API 기본 연동</td>
-              <td><span class="role r2">②</span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-            <tr>
-              <td>초기 프롬프트 & 페르소나</td>
-              <td><span class="role r1">①</span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-            <tr>
-              <td>PHQ-9 설문 매핑 & 라우팅</td>
-              <td><span class="role r1">①</span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-            <tr>
-              <td>React 프로젝트 셋업 & 온보딩 UI</td>
-              <td><span class="role r4">④</span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w1 bar-full"></span></td>
-              <td class="bar-cell"></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-
-            <!-- W2 -->
-            <tr class="g-cat"><td colspan="23">Week 2 · 핵심 기능 구현 (D8~D14)</td></tr>
-            <tr>
-              <td>진단 에이전트 (순환 구조)</td>
-              <td><span class="role r1">①</span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-            <tr>
-              <td>위기 감지 2단계 로직</td>
-              <td><span class="role r1">①</span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-            <tr>
-              <td>세션 관리 + 무활동 타임아웃</td>
-              <td><span class="role r2">②</span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-            <tr>
-              <td>음성 비언어 분석 (librosa)</td>
-              <td><span class="role r2">②</span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-            <tr>
-              <td>알림 API (SMS coolSMS / FCM)</td>
-              <td><span class="role r2">②</span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-            <tr>
-              <td>음성 스토리지 + AES-256</td>
-              <td><span class="role r3">③</span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-            <tr>
-              <td>RBAC 권한 테이블 & JWT 완성</td>
-              <td><span class="role r3">③</span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-            <tr>
-              <td>사용자 포털 UI (대시보드·추이)</td>
-              <td><span class="role r4">④</span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w2 bar-full"></span></td>
-              <td class="bar-cell"></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-
-            <!-- W3 -->
-            <tr class="g-cat"><td colspan="23">Week 3 · 포털 완성 & 배포 (D15~D21)</td></tr>
-            <tr>
-              <td>보호자 포털 UI</td>
-              <td><span class="role r4">④</span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"><span class="bar g-w3 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w3 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w3 bar-full"></span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-            <tr>
-              <td>전문가 / 지자체 포털 UI</td>
-              <td><span class="role r4">④</span><br><span class="role r1" style="margin-top:3px;display:inline-block">① 지원</span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"><span class="bar g-w3 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w3 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w3 bar-full"></span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-            <tr>
-              <td>Function Calling (119 · 보호자)</td>
-              <td><span class="role r1">①</span><br><span class="role r2" style="margin-top:3px;display:inline-block">② 구현</span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"><span class="bar g-w3 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w3 bar-full"></span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-            <tr>
-              <td>비접속 감지 Celery Beat</td>
-              <td><span class="role r3">③</span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"><span class="bar g-w3 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w3 bar-full"></span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-            <tr>
-              <td>3포털 통합 API 완성</td>
-              <td><span class="role r2">②</span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"><span class="bar g-w3 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w3 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w3 bar-full"></span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-            <tr>
-              <td>전체 통합 테스트</td>
-              <td><span class="role rAll">전원</span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"><span class="bar g-w3 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w3 bar-full"></span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td>
-            </tr>
-            <tr>
-              <td>HTTPS 배포 + 보안 점검</td>
-              <td><span class="role r3">③</span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"><span class="bar g-w3 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w3 bar-full"></span></td>
-              <td class="bar-cell"></td>
-            </tr>
-            <tr>
-              <td>버그 픽스 & 데모 준비</td>
-              <td><span class="role rAll">전원</span></td>
-              <td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td><td class="bar-cell"></td>
-              <td class="bar-cell"><span class="bar g-w3 bar-full"></span></td>
-              <td class="bar-cell"><span class="bar g-w3 bar-full"></span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--text2);margin-top:6px">
-        <span style="display:flex;align-items:center;gap:6px"><span style="width:14px;height:8px;background:#bfdbfe;border-radius:2px;display:inline-block"></span>1주차 (D1~D7)</span>
-        <span style="display:flex;align-items:center;gap:6px"><span style="width:14px;height:8px;background:#6ee7b7;border-radius:2px;display:inline-block"></span>2주차 (D8~D14)</span>
-        <span style="display:flex;align-items:center;gap:6px"><span style="width:14px;height:8px;background:#fcd34d;border-radius:2px;display:inline-block"></span>3주차 (D15~D21)</span>
-      </div>
-    </section>
-
-    <!-- 2. 1주차 -->
-    <section id="week1" class="section">
-      <div class="sec-label">Week 1 · D1–D7</div>
-      <h2>1주차 — 기반 구축</h2>
-      <div class="week-header w1-bg">
-        <div class="wh-num">01</div>
-        <div>
-          <div class="wh-title">기반 구축 주간</div>
-          <div class="wh-sub">DB 스키마 · FastAPI · STT/TTS 파이프라인 · 초기 프롬프트 · 온보딩 UI</div>
-        </div>
-        <div class="wh-goal">
-          <span style="font-size:10px;opacity:.7">주말 목표</span>
-          <strong>음성 → LLM → 음성 기본 루프 동작</strong>
-        </div>
-      </div>
-
-      <div class="task-table-wrap">
-        <table class="task-table">
-          <thead>
-            <tr><th>일자</th><th>역할</th><th>작업</th><th>우선도</th><th>완료 기준 (Definition of Done)</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="day">D1 (월)</td>
-              <td><span class="role r3">③</span></td>
-              <td>DB 스키마 전체 확정<br><ul class="deliv"><li>users, sessions, diagnosis_history, voice_files, guardians, experts 테이블</li></ul></td>
-              <td><span class="pri p-must">MUST</span></td>
-              <td style="font-size:12px">ERD 문서 공유, 전원 리뷰 완료</td>
-            </tr>
-            <tr>
-              <td class="day">D1 (월)</td>
-              <td><span class="role r2">②</span></td>
-              <td>STT/TTS 엔진 선택 결정<br><ul class="deliv"><li>Whisper API vs Clova Speech 비교 후 채택</li><li>TTS: Clova Voice 또는 Azure TTS</li></ul></td>
-              <td><span class="pri p-must">MUST</span></td>
-              <td style="font-size:12px">선택 이유 슬랙 공유 + 계정 발급</td>
-            </tr>
-            <tr>
-              <td class="day">D1–D2</td>
-              <td><span class="role r1">①</span></td>
-              <td>노인 특화 AI 페르소나 정의<br><ul class="deliv"><li>이름·말투·주제 제한 범위 문서화</li><li>위기 상황 금지 표현 목록</li></ul></td>
-              <td><span class="pri p-must">MUST</span></td>
-              <td style="font-size:12px">페르소나 프롬프트 v1 문서 완성</td>
-            </tr>
-            <tr>
-              <td class="day">D1–D3</td>
-              <td><span class="role r2">②</span></td>
-              <td>FastAPI 서버 + WebSocket 엔드포인트<br><ul class="deliv"><li>/ws/voice — 스피커 실시간 연결</li><li>/api/session — 세션 CRUD</li></ul></td>
-              <td><span class="pri p-must">MUST</span></td>
-              <td style="font-size:12px">WebSocket ping/pong 테스트 통과</td>
-            </tr>
-            <tr>
-              <td class="day">D1–D4</td>
-              <td><span class="role r2">②</span></td>
-              <td>STT → LLM → TTS 파이프라인<br><ul class="deliv"><li>음성 수신 → 텍스트 변환 → Claude API → TTS 응답</li><li>평균 레이턴시 목표: 3초 이하</li></ul></td>
-              <td><span class="pri p-must">MUST</span></td>
-              <td style="font-size:12px">"안녕하세요" 말하면 AI가 음성으로 답 가능</td>
-            </tr>
-            <tr>
-              <td class="day">D2–D3</td>
-              <td><span class="role r3">③</span></td>
-              <td>PostgreSQL × 2 구성 + 마이그레이션<br><ul class="deliv"><li>일반 DB (프로필·세션), 민감 DB (음성·진단)</li></ul></td>
-              <td><span class="pri p-must">MUST</span></td>
-              <td style="font-size:12px">Alembic 마이그레이션 성공</td>
-            </tr>
-            <tr>
-              <td class="day">D3–D5</td>
-              <td><span class="role r3">③</span></td>
-              <td>OTP/PIN 인증 구현<br><ul class="deliv"><li>전화번호 → coolSMS OTP 발송 → 검증</li><li>세션 토큰 만료 72시간 설정</li></ul></td>
-              <td><span class="pri p-must">MUST</span></td>
-              <td style="font-size:12px">테스트 번호로 OTP 수신·로그인 성공</td>
-            </tr>
-            <tr>
-              <td class="day">D3–D6</td>
-              <td><span class="role r4">④</span></td>
-              <td>React + TypeScript 프로젝트 셋업<br><ul class="deliv"><li>온보딩 UI (큰 글씨·선택지 기반)</li><li>PHQ-9 설문 UI (7문항 선택지)</li><li>STT 실패 시 텍스트 폴백 UI</li></ul></td>
-              <td><span class="pri p-high">HIGH</span></td>
-              <td style="font-size:12px">설문 완료 → 점수 화면 렌더링</td>
-            </tr>
-            <tr>
-              <td class="day">D4–D6</td>
-              <td><span class="role r1">①</span></td>
-              <td>PHQ-9 매핑 + 프롬프트 라우팅<br><ul class="deliv"><li>점수 구간별 시스템 프롬프트 분기</li><li>국립정신건강센터 자료 기반 문항 검증</li></ul></td>
-              <td><span class="pri p-must">MUST</span></td>
-              <td style="font-size:12px">점수 0~27 → 4개 구간 프롬프트 분기 동작</td>
-            </tr>
-            <tr>
-              <td class="day">D4–D6</td>
-              <td><span class="role r2">②</span></td>
-              <td>Claude API 연동 + 세션 흐름 테스트<br><ul class="deliv"><li>프롬프트 주입 → 응답 → 저장 루프</li></ul></td>
-              <td><span class="pri p-must">MUST</span></td>
-              <td style="font-size:12px">5회 연속 대화 유지 테스트 통과</td>
-            </tr>
-            <tr>
-              <td class="day">D7 (일)</td>
-              <td><span class="role rAll">전원</span></td>
-              <td>1주차 통합 데모 + 회고<br><ul class="deliv"><li>"말하면 AI가 답하는" 기본 루프 시연</li><li>블로커 정리 → 2주차 계획 조정</li></ul></td>
-              <td><span class="pri p-must">MUST</span></td>
-              <td style="font-size:12px">스피커 → AI 대화 1회 성공 시연</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="callout co-info">
-        <strong>1주차 성공 지표:</strong> D7 금요일에 스피커에 말하면 AI가 맥락 있게 음성으로 답하는 기본 루프가 동작해야 합니다. 이게 안 되면 2주차 전체 계획이 붕괴됩니다.
-      </div>
-    </section>
-
-    <!-- 3. 2주차 -->
-    <section id="week2" class="section">
-      <div class="sec-label">Week 2 · D8–D14</div>
-      <h2>2주차 — 핵심 기능 구현</h2>
-      <div class="week-header w2-bg">
-        <div class="wh-num">02</div>
-        <div>
-          <div class="wh-title">핵심 기능 주간</div>
-          <div class="wh-sub">진단 에이전트 · 위기 감지 · 음성 분석 · 알림 시스템 · 사용자 포털 UI</div>
-        </div>
-        <div class="wh-goal">
-          <span style="font-size:10px;opacity:.7">주말 목표</span>
-          <strong>위기 감지 → 보호자 알림 동작</strong>
-        </div>
-      </div>
-
-      <div class="task-table-wrap">
-        <table class="task-table">
-          <thead>
-            <tr><th>일자</th><th>역할</th><th>작업</th><th>우선도</th><th>완료 기준</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="day">D8–D10</td>
-              <td><span class="role r1">①</span></td>
-              <td>진단 에이전트 순환 구조<br><ul class="deliv"><li>대화 요약 → 점수 업데이트 → 프롬프트 재조정 루프</li><li>diagnosis_history 테이블에 delta 저장</li></ul></td>
-              <td><span class="pri p-must">MUST</span></td>
-              <td style="font-size:12px">3회 대화 후 진단 점수가 업데이트됨 확인</td>
-            </tr>
-            <tr>
-              <td class="day">D8–D9</td>
-              <td><span class="role r2">②</span></td>
-              <td>세션 관리 고도화 + 무활동 감지<br><ul class="deliv"><li>20분 무활동 → "아직 계세요?" 음성 알림</li><li>30분 후 자동 세션 종료 + 요약 저장</li></ul></td>
-              <td><span class="pri p-must">MUST</span></td>
-              <td style="font-size:12px">무활동 타이머 테스트 통과</td>
-            </tr>
-            <tr>
-              <td class="day">D8–D10</td>
-              <td><span class="role r3">③</span></td>
-              <td>음성 원본 스토리지 구축<br><ul class="deliv"><li>S3 또는 MinIO 연동</li><li>AES-256 암호화 저장</li><li>접근 감사 로그 테이블</li></ul></td>
-              <td><span class="pri p-high">HIGH</span></td>
-              <td style="font-size:12px">음성 파일 업로드·복호화 테스트 통과</td>
-            </tr>
-            <tr>
-              <td class="day">D8–D14</td>
-              <td><span class="role r4">④</span></td>
-              <td>사용자 포털 UI 완성<br><ul class="deliv"><li>감정 추이 차트 (주간·월간)</li><li>대화 이력 뷰어</li><li>스피커 연결 상태 표시</li><li>설정 페이지 (보호자 등록)</li></ul></td>
-              <td><span class="pri p-high">HIGH</span></td>
-              <td style="font-size:12px">사용자 로그인 → 대시보드 전체 렌더링</td>
-            </tr>
-            <tr>
-              <td class="day">D9–D11</td>
-              <td><span class="role r2">②</span></td>
-              <td>음성 비언어 분석 (librosa / pyAudioAnalysis)<br><ul class="deliv"><li>음높이(pitch) · 속도(tempo) · 에너지 추출</li><li>분석 결과를 진단 에이전트에 피처로 투입</li></ul></td>
-              <td><span class="pri p-high">HIGH</span></td>
-              <td style="font-size:12px">분석값이 diagnosis_history에 저장됨</td>
-            </tr>
-            <tr>
-              <td class="day">D10–D12</td>
-              <td><span class="role r1">①</span></td>
-              <td>위기 감지 2단계 로직<br><ul class="deliv"><li>위험 단어 사전 + 문맥 score 계산 (0~1)</li><li>score &lt; 0.4: 확인 질문 / 0.4~0.7: 앱 알림+상담번호 / 0.7~0.9: 보호자 확인 요청 / &gt;0.9: 즉시 119</li></ul></td>
-              <td><span class="pri p-must">MUST</span></td>
-              <td style="font-size:12px">테스트 스크립트 5종 → 정확한 분기 확인</td>
-            </tr>
-            <tr>
-              <td class="day">D11–D13</td>
-              <td><span class="role r2">②</span></td>
-              <td>알림 API (SMS · 이메일 · FCM)<br><ul class="deliv"><li>coolSMS 연동 SMS 발송</li><li>보호자 앱 FCM 푸시 (선택)</li><li>위기 알림 템플릿 (상황별 3종)</li></ul></td>
-              <td><span class="pri p-must">MUST</span></td>
-              <td style="font-size:12px">실제 전화번호로 위기 알림 SMS 수신 확인</td>
-            </tr>
-            <tr>
-              <td class="day">D11–D13</td>
-              <td><span class="role r3">③</span></td>
-              <td>RBAC 권한 테이블 + 3포털 분리<br><ul class="deliv"><li>user / guardian / expert 역할별 API 접근 제한</li><li>JWT claim에 role 포함</li></ul></td>
-              <td><span class="pri p-high">HIGH</span></td>
-              <td style="font-size:12px">보호자 토큰으로 사용자 대화 직접 접근 불가 확인</td>
-            </tr>
-            <tr>
-              <td class="day">D14 (토)</td>
-              <td><span class="role rAll">전원</span></td>
-              <td>2주차 통합 데모 + 회고<br><ul class="deliv"><li>위기 대화 시나리오 → SMS 알림 수신 데모</li><li>3주차 포털 작업 우선순위 확정</li></ul></td>
-              <td><span class="pri p-must">MUST</span></td>
-              <td style="font-size:12px">위기 감지 → 보호자 SMS 수신 성공</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="callout co-info">
-        <strong>2주차 성공 지표:</strong> 위기 단어가 포함된 대화 시 2단계 로직이 작동하고, 실제 전화번호로 SMS 알림이 도착해야 합니다. 이게 없으면 서비스를 공개할 수 없습니다.
-      </div>
-    </section>
-
-    <!-- 4. 3주차 -->
-    <section id="week3" class="section">
-      <div class="sec-label">Week 3 · D15–D21</div>
-      <h2>3주차 — 포털 완성 & 배포</h2>
-      <div class="week-header w3-bg">
-        <div class="wh-num">03</div>
-        <div>
-          <div class="wh-title">포털 완성 & 배포 주간</div>
-          <div class="wh-sub">보호자 포털 · 전문가 포털 · Function Calling · HTTPS 배포 · 지자체 데모</div>
-        </div>
-        <div class="wh-goal">
-          <span style="font-size:10px;opacity:.7">D21 목표</span>
-          <strong>지자체 관계자 대상 데모 시연</strong>
-        </div>
-      </div>
-
-      <div class="task-table-wrap">
-        <table class="task-table">
-          <thead>
-            <tr><th>일자</th><th>역할</th><th>작업</th><th>우선도</th><th>완료 기준</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="day">D15–D17</td>
-              <td><span class="role r4">④</span></td>
-              <td>보호자 포털 UI<br><ul class="deliv"><li>주간 감정 리포트 (차트 + 요약)</li><li>위기 알림 내역 (일시·심각도·조치 이력)</li><li>안부 미확인 현황 (비접속 경보)</li></ul></td>
-              <td><span class="pri p-must">MUST</span></td>
-              <td style="font-size:12px">보호자 계정 로그인 → 리포트 전체 렌더링</td>
-            </tr>
-            <tr>
-              <td class="day">D15–D16</td>
-              <td><span class="role r1">①</span><br><span class="role r2" style="margin-top:3px;display:inline-block">②</span></td>
-              <td>Function Calling 구현<br><ul class="deliv"><li>call_guardian(message) — 보호자 즉시 연락</li><li>call_119(location, situation) — 응급 신고</li><li>refer_counselor(type) — 전문 상담 연계</li></ul></td>
-              <td><span class="pri p-must">MUST</span></td>
-              <td style="font-size:12px">score &gt; 0.9 시나리오에서 119 함수 호출 확인</td>
-            </tr>
-            <tr>
-              <td class="day">D15–D16</td>
-              <td><span class="role r3">③</span></td>
-              <td>비접속 감지 Celery Beat<br><ul class="deliv"><li>매일 오전 9시 마지막 접속 24시간 초과 사용자 체크</li><li>48시간 → 보호자 문자 / 72시간 → 공무원 알림</li></ul></td>
-              <td><span class="pri p-must">MUST</span></td>
-              <td style="font-size:12px">테스트 계정 72시간 미접속 후 알림 발송 확인</td>
-            </tr>
-            <tr>
-              <td class="day">D15–D17</td>
-              <td><span class="role r2">②</span></td>
-              <td>3포털 통합 API 완성<br><ul class="deliv"><li>GET /guardian/report/{user_id}</li><li>GET /expert/high-risk-users</li><li>POST /expert/intervention-log</li></ul></td>
-              <td><span class="pri p-must">MUST</span></td>
-              <td style="font-size:12px">Postman 컬렉션 전체 통과</td>
-            </tr>
-            <tr>
-              <td class="day">D16–D18</td>
-              <td><span class="role r4">④</span><br><span class="role r1" style="margin-top:3px;display:inline-block">① 지원</span></td>
-              <td>전문가 / 지자체 포털 UI<br><ul class="deliv"><li>고위험군 목록 (위험도 배지 · 최근 대화 요약)</li><li>개입 기록 작성 폼</li><li>지자체 보고서 다운로드 (PDF)</li></ul></td>
-              <td><span class="pri p-must">MUST</span></td>
-              <td style="font-size:12px">전문가 계정 → 고위험군 목록 렌더링</td>
-            </tr>
-            <tr>
-              <td class="day">D17–D18</td>
-              <td><span class="role rAll">전원</span></td>
-              <td>전체 통합 테스트 (시나리오 기반)<br><ul class="deliv"><li>정상 대화 시나리오 3종</li><li>위기 대화 시나리오 (경증·중증·응급) 3종</li><li>보호자 수신 확인 · 전문가 포털 확인</li></ul></td>
-              <td><span class="pri p-must">MUST</span></td>
-              <td style="font-size:12px">6개 시나리오 전부 예상 결과와 일치</td>
-            </tr>
-            <tr>
-              <td class="day">D18–D19</td>
-              <td><span class="role r3">③</span></td>
-              <td>HTTPS 배포 + 보안 점검<br><ul class="deliv"><li>SSL 인증서 적용 (Let's Encrypt)</li><li>API 키 환경변수 분리 확인</li><li>개인정보처리방침 페이지 배포</li></ul></td>
-              <td><span class="pri p-must">MUST</span></td>
-              <td style="font-size:12px">외부 URL로 전체 기능 접근 가능</td>
-            </tr>
-            <tr>
-              <td class="day">D19–D20</td>
-              <td><span class="role rAll">전원</span></td>
-              <td>버그 픽스 + 데모 시나리오 준비<br><ul class="deliv"><li>5분 데모 시나리오 스크립트 작성</li><li>지자체 관계자용 가이드 문서 작성</li></ul></td>
-              <td><span class="pri p-high">HIGH</span></td>
-              <td style="font-size:12px">데모 리허설 1회 완료</td>
-            </tr>
-            <tr>
-              <td class="day">D21 (일)</td>
-              <td><span class="role rAll">전원</span></td>
-              <td>최종 배포 확인 + 회고<br><ul class="deliv"><li>프로덕션 환경 최종 점검</li><li>3주 회고 (KPT 방식)</li><li>다음 스프린트 백로그 작성</li></ul></td>
-              <td><span class="pri p-high">HIGH</span></td>
-              <td style="font-size:12px">지자체 데모 시연 가능 상태 확인</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="callout co-green">
-        <strong>3주차 성공 지표:</strong> D21에 외부인(지자체 관계자 또는 보호자 역할 테스터)이 데모를 보고 "실제로 쓸 수 있겠다"는 피드백을 받으면 성공. 보호자 포털에서 주간 리포트를 확인하고, 전문가 포털에서 고위험군 목록이 보이면 충분합니다.
-      </div>
-    </section>
-
-    <!-- 5. 체크리스트 -->
-    <section id="checklist" class="section">
-      <div class="sec-label">Checklist</div>
-      <h2>주차별 완료 체크리스트</h2>
-
-      <div class="check-grid">
-        <div class="check-card" style="border-top:3px solid #1e40af">
-          <div class="check-title">
-            <span style="width:10px;height:10px;border-radius:50%;background:#bfdbfe;display:inline-block"></span>
-            1주차 완료 기준
-          </div>
-          <ul class="check-list">
-            <li>DB 스키마 전원 리뷰 완료 (D1)</li>
-            <li>STT/TTS 엔진 결정 (D1)</li>
-            <li>WebSocket 서버 ping/pong 통과</li>
-            <li>음성 → AI → 음성 기본 루프 동작</li>
-            <li>OTP 로그인 테스트 통과</li>
-            <li>PHQ-9 설문 UI 렌더링</li>
-            <li>페르소나 프롬프트 v1 확정</li>
-            <li>Claude API 5회 연속 대화 유지</li>
-          </ul>
-        </div>
-        <div class="check-card" style="border-top:3px solid #065f46">
-          <div class="check-title">
-            <span style="width:10px;height:10px;border-radius:50%;background:#6ee7b7;display:inline-block"></span>
-            2주차 완료 기준
-          </div>
-          <ul class="check-list">
-            <li>진단 에이전트 3회 대화 후 점수 업데이트</li>
-            <li>위기 감지 5종 시나리오 분기 정확</li>
-            <li>SMS 알림 실제 수신 확인</li>
-            <li>음성 비언어 분석값 DB 저장 확인</li>
-            <li>음성 파일 AES-256 암호화 저장</li>
-            <li>RBAC 권한 분리 테스트 통과</li>
-            <li>사용자 포털 대시보드 전체 렌더링</li>
-            <li>무활동 타임아웃 자동 동작</li>
-          </ul>
-        </div>
-        <div class="check-card" style="border-top:3px solid #78350f">
-          <div class="check-title">
-            <span style="width:10px;height:10px;border-radius:50%;background:#fcd34d;display:inline-block"></span>
-            3주차 완료 기준
-          </div>
-          <ul class="check-list">
-            <li>보호자 포털 리포트 렌더링</li>
-            <li>전문가 포털 고위험군 목록 표시</li>
-            <li>Function Calling 응급 시나리오 동작</li>
-            <li>비접속 Celery Beat 알림 동작</li>
-            <li>6종 통합 시나리오 전부 통과</li>
-            <li>HTTPS 외부 URL 접근 가능</li>
-            <li>개인정보처리방침 페이지 게시</li>
-            <li>데모 리허설 1회 완료</li>
-          </ul>
-        </div>
-        <div class="check-card" style="border-top:3px solid var(--coral)">
-          <div class="check-title">
-            <span style="width:10px;height:10px;border-radius:50%;background:#fca5a5;display:inline-block"></span>
-            범위 외 (다음 스프린트)
-          </div>
-          <ul class="check-list">
-            <li>모바일 앱 (앱스토어 배포)</li>
-            <li>치매 예방 콘텐츠 (두뇌 운동)</li>
-            <li>음성 비언어 분석 고도화 (ML 모델)</li>
-            <li>지자체 API 직접 연동</li>
-            <li>다국어 지원 (영어·중국어)</li>
-            <li>음성 보관 6개월 자동 삭제</li>
-            <li>AB 테스트 / 분석 대시보드</li>
-            <li>사회적기업 인증 절차</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- 6. 리스크 -->
-    <section id="risk" class="section">
-      <div class="sec-label">Risk Management</div>
-      <h2>리스크 & 대응 방안</h2>
-
-      <div class="risk-grid">
-        <div class="risk-card" style="border-top-color:var(--coral)">
-          <div class="risk-title">STT 레이턴시 초과</div>
-          <div class="risk-body">Whisper API가 느린 경우 대화 흐름이 끊김. 목표 3초 이하. 3초 초과 시 노인이 답하는 걸 포기함.</div>
-          <div class="risk-sol"><strong>대응:</strong> D4까지 레이턴시 측정 후 기준 초과 시 Clova Speech(국내 서버)로 즉시 전환. 로컬 Whisper.cpp 폴백 준비.</div>
-        </div>
-        <div class="risk-card" style="border-top-color:var(--coral)">
-          <div class="risk-title">④ 프론트엔드 3주차 과부하</div>
-          <div class="risk-body">보호자 포털 + 전문가 포털이 D15~D18에 집중. 1명이 3일 안에 2개 포털을 완성해야 함.</div>
-          <div class="risk-sol"><strong>대응:</strong> ① 역할이 D15부터 전문가 포털 UI 지원. 전문가 포털은 MVP 범위를 고위험군 목록 + 개입 기록 2개로 제한.</div>
-        </div>
-        <div class="risk-card" style="border-top-color:var(--coral)">
-          <div class="risk-title">위기 감지 오탐</div>
-          <div class="risk-body">"죽도록 맛있다" 같은 일상 표현이 위기 신호로 오탐될 경우 신뢰 문제 발생. 허위 119 신고 시 법적 문제.</div>
-          <div class="risk-sol"><strong>대응:</strong> 단어 단독 감지 금지. 문맥 + 최근 진단 score 조합 필수. 0.9 이상만 119. 테스트 케이스 10종 이상 통과해야 배포.</div>
-        </div>
-        <div class="risk-card" style="border-top-color:var(--amber)">
-          <div class="risk-title">DB 스키마 후반 변경</div>
-          <div class="risk-body">D1에 스키마를 확정하지 않으면 이후 모든 API에 영향. 중간 변경 시 전체 일정 3~5일 지연.</div>
-          <div class="risk-sol"><strong>대응:</strong> D1 오전에 4인 전원 스키마 리뷰 1시간 의무 진행. 이후 변경은 마이그레이션 파일 추가만 허용, 기존 컬럼명 변경 금지.</div>
-        </div>
-        <div class="risk-card" style="border-top-color:var(--amber)">
-          <div class="risk-title">Claude API 비용 급증</div>
-          <div class="risk-body">노인 사용자의 경우 대화 시간이 길어 토큰 사용량이 예상보다 클 수 있음. 개발 중 테스트 비용도 발생.</div>
-          <div class="risk-sol"><strong>대응:</strong> 개발 환경은 claude-haiku 사용. 프롬프트 캐싱 적용. 세션당 최대 토큰 상한 설정. 일별 API 비용 모니터링 알림 설정.</div>
-        </div>
-        <div class="risk-card" style="border-top-color:var(--amber)">
-          <div class="risk-title">3주 안에 WebSocket 불안정</div>
-          <div class="risk-body">음성 스트리밍 WebSocket 연결이 끊기거나 지연될 경우 대화 품질 저하. 특히 스피커 재연결 처리가 복잡.</div>
-          <div class="risk-sol"><strong>대응:</strong> D3까지 ping/pong 재연결 로직 구현. 연결 실패 시 3회 자동 재시도. 재시도 실패 시 "잠시 후 다시 말씀해주세요" 안내.</div>
-        </div>
-      </div>
-
-      <div class="callout co-danger" style="margin-top:16px">
-        <strong>절대 지켜야 할 규칙:</strong> 위기 감지 로직이 완성되지 않은 상태로 실제 사용자에게 배포하면 안 됩니다. 오탐으로 인한 허위 신고 또는 미탐으로 인한 방치 모두 법적·윤리적 문제가 됩니다. D12까지 2단계 로직이 완성되지 않으면 배포 일정을 연기해야 합니다.
-      </div>
-    </section>
-
-  </main>
+<div class="tabs">
+  <button class="tb on" onclick="sw(this,'p1')">① 역할별 세부 분석</button>
+  <button class="tb" onclick="sw(this,'p2')">② 누락 항목</button>
+  <button class="tb" onclick="sw(this,'p3')">③ 전체 일정</button>
+  <button class="tb" onclick="sw(this,'p4')">④ 시작 순서 (Critical Path)</button>
 </div>
 
-<footer>
-  <span>AI 친구 서비스 · 3주 스프린트 계획</span>
-  <span>Analyzed by Claude · Anthropic · 2026</span>
-</footer>
+<!-- TAB 1 역할 세부 -->
+<div id="p1" class="pn on">
+  <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:14px">
+    <span style="display:inline-flex;align-items:center;gap:5px;margin-right:14px"><span style="width:8px;height:8px;border-radius:50%;background:#888780;display:inline-block"></span>기존 항목</span>
+    <span style="display:inline-flex;align-items:center;gap:5px;margin-right:14px"><span style="width:8px;height:8px;border-radius:50%;background:#1D9E75;display:inline-block"></span>추가 필요</span>
+    <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:#E24B4A;display:inline-block"></span>핵심 누락</span>
+  </div>
+  <div class="role-grid">
+
+    <div class="role-card">
+      <div class="role-head">
+        <div class="role-icon" style="background:#EEEDFE;color:#3C3489">AI</div>
+        <div><div class="role-name">① AI / 프롬프트 + 데이터</div><div class="role-sub">4번 프론트엔드 병행</div></div>
+      </div>
+      <div class="task-list">
+        <div class="task existing"><span class="task-bullet"></span>질환별 시스템 프롬프트 설계</div>
+        <div class="task existing"><span class="task-bullet"></span>PHQ-9 등 설문 매핑 · 점수→프롬프트 라우팅</div>
+        <div class="task existing"><span class="task-bullet"></span>A2A 자살위험 감지 로직</div>
+        <div class="task existing"><span class="task-bullet"></span>국립정신건강센터 자료 수집</div>
+        <div class="task new"><span class="task-bullet"></span>진단 에이전트 순환 구조 설계 (delta 기반 추세)</div>
+        <div class="task new"><span class="task-bullet"></span>노인 특화 페르소나 프롬프트 (회고·일상 주제)</div>
+        <div class="task new"><span class="task-bullet"></span>위기 감지 2단계 심각도 분류 로직 (score 0~1)</div>
+        <div class="task new"><span class="task-bullet"></span>Function Calling 정의 (보호자 알림·119 연결)</div>
+        <div class="task critical"><span class="task-bullet"></span>음성 비언어 신호 → 프롬프트 반영 규칙</div>
+      </div>
+    </div>
+
+    <div class="role-card">
+      <div class="role-head">
+        <div class="role-icon" style="background:#E1F5EE;color:#085041">BE</div>
+        <div><div class="role-name">② 백엔드 / API</div><div class="role-sub">FastAPI · Claude API · 세션 관리</div></div>
+      </div>
+      <div class="task-list">
+        <div class="task existing"><span class="task-bullet"></span>FastAPI 서버 구축</div>
+        <div class="task existing"><span class="task-bullet"></span>Claude API 연동 · REST 엔드포인트</div>
+        <div class="task existing"><span class="task-bullet"></span>상담 세션 관리</div>
+        <div class="task critical"><span class="task-bullet"></span>STT 처리 파이프라인 (Whisper / Clova / Azure)</div>
+        <div class="task critical"><span class="task-bullet"></span>TTS 응답 변환 (스피커 출력)</div>
+        <div class="task critical"><span class="task-bullet"></span>WebSocket 실시간 음성 스트리밍</div>
+        <div class="task new"><span class="task-bullet"></span>스피커 wake word · 연결 상태 관리 API</div>
+        <div class="task new"><span class="task-bullet"></span>비활성 타임아웃 감지 (15~30분) API</div>
+        <div class="task new"><span class="task-bullet"></span>보호자 알림 발송 API (SMS/이메일/FCM)</div>
+        <div class="task new"><span class="task-bullet"></span>음성 비언어 분석 API 연동 (음높이·속도)</div>
+        <div class="task new"><span class="task-bullet"></span>3포털 권한 분리 API (사용자/보호자/전문가)</div>
+      </div>
+    </div>
+
+    <div class="role-card">
+      <div class="role-head">
+        <div class="role-icon" style="background:#FAEEDA;color:#633806">DB</div>
+        <div><div class="role-name">③ DB / 보안 / 인프라</div><div class="role-sub">PostgreSQL × 2 · JWT · AES-256 · Celery</div></div>
+      </div>
+      <div class="task-list">
+        <div class="task existing"><span class="task-bullet"></span>PostgreSQL × 2 분리 (일반 DB / 민감 DB)</div>
+        <div class="task existing"><span class="task-bullet"></span>JWT 인증 · AES-256 암호화</div>
+        <div class="task existing"><span class="task-bullet"></span>Celery 스케줄러 · 배포</div>
+        <div class="task new"><span class="task-bullet"></span>음성 원본 저장소 (오브젝트 스토리지 · S3 등)</div>
+        <div class="task new"><span class="task-bullet"></span>음성 파일 접근 감사 로그 (audit log)</div>
+        <div class="task new"><span class="task-bullet"></span>음성 보관 기간 정책 (6개월 후 자동 삭제)</div>
+        <div class="task new"><span class="task-bullet"></span>진단 이력 테이블 설계 (timestamp·score·flags)</div>
+        <div class="task critical"><span class="task-bullet"></span>OTP/PIN 기반 인증 (비밀번호 대체)</div>
+        <div class="task new"><span class="task-bullet"></span>3포털 RBAC 권한 테이블</div>
+        <div class="task new"><span class="task-bullet"></span>비접속 감지 Celery Beat 태스크</div>
+        <div class="task new"><span class="task-bullet"></span>HTTPS · 개인정보처리방침 페이지 배포</div>
+      </div>
+    </div>
+
+    <div class="role-card warn">
+      <div class="role-head">
+        <div class="role-icon" style="background:#FAECE7;color:#712B13">FE</div>
+        <div><div class="role-name">④ 프론트엔드</div><div class="role-sub">React + TS · ① 역할과 병행 — 부하 과중 주의</div></div>
+      </div>
+      <div class="task-list">
+        <div class="task existing"><span class="task-bullet"></span>채팅 UI (React + TS)</div>
+        <div class="task existing"><span class="task-bullet"></span>자가검진 설문 UI · 위험도 결과 화면</div>
+        <div class="task existing"><span class="task-bullet"></span>대시보드 (사용자용)</div>
+        <div class="task critical"><span class="task-bullet"></span>보호자 포털 UI (주간 리포트 · 위기 알림)</div>
+        <div class="task critical"><span class="task-bullet"></span>전문가 / 지자체 포털 UI (고위험군 목록 · 개입 기록)</div>
+        <div class="task new"><span class="task-bullet"></span>스피커 연결 상태 표시 · 설정 UI</div>
+        <div class="task new"><span class="task-bullet"></span>감정 추이 차트 (장기 delta 시각화)</div>
+        <div class="task new"><span class="task-bullet"></span>노인용 온보딩 UI (큰 글씨 · 선택지 기반)</div>
+        <div class="task new"><span class="task-bullet"></span>텍스트 입력 폴백 UI (STT 실패 시 전환)</div>
+        <div class="task new"><span class="task-bullet"></span>위기 알림 모달 (severity 단계별 화면)</div>
+      </div>
+    </div>
+
+  </div>
+  <div style="background:var(--color-background-warning);border:.5px solid var(--color-border-warning);border-radius:var(--border-radius-md);padding:12px 14px;font-size:12px;color:var(--color-text-warning);margin-top:14px">
+    <strong>⚠ 부하 경고:</strong> ① AI/데이터 역할이 ④ 프론트엔드를 병행 중인데, STT/TTS/WebSocket이 누락된 상태에서 ②백엔드에 추가되면 ② 역할 부하가 폭증합니다. STT/TTS 처리는 별도 인원 배정 또는 ②와 ① 분담 재조정을 권장합니다.
+  </div>
+</div>
+
+<!-- TAB 2 누락 항목 -->
+<div id="p2" class="pn">
+  <div class="miss-grid">
+    <div class="miss-card" style="border-left:3px solid #E24B4A">
+      <div class="miss-title"><span class="sev sev-h">HIGH</span>STT / TTS 파이프라인</div>
+      <div class="miss-body">스피커 기반 서비스의 핵심인데 역할 분담 어디에도 없음. Whisper(OpenAI) 또는 Clova Speech(네이버) 선택 + TTS 엔진(Clova/Azure) 연동 필요. 백엔드 ②에 즉시 추가.</div>
+    </div>
+    <div class="miss-card" style="border-left:3px solid #E24B4A">
+      <div class="miss-title"><span class="sev sev-h">HIGH</span>WebSocket 실시간 통신</div>
+      <div class="miss-body">스피커 ↔ 서버 간 음성 스트리밍은 REST가 아닌 WebSocket 필수. 지연 없는 대화를 위해 FastAPI WebSocket 엔드포인트 설계가 필요. 현재 "REST 엔드포인트"만 명시돼 있음.</div>
+    </div>
+    <div class="miss-card" style="border-left:3px solid #E24B4A">
+      <div class="miss-title"><span class="sev sev-h">HIGH</span>보호자 / 전문가 포털 UI</div>
+      <div class="miss-body">프론트엔드 항목에 사용자용 UI만 있음. 보호자 주간 리포트, 위기 알림 페이지, 전문가용 고위험군 대시보드가 완전히 누락. 3포털이 핵심 차별점인데 개발 계획 없는 상태.</div>
+    </div>
+    <div class="miss-card" style="border-left:3px solid #BA7517">
+      <div class="miss-title"><span class="sev sev-m">MEDIUM</span>알림 시스템</div>
+      <div class="miss-body">보호자에게 위기 알림·안부 알림 발송하는 시스템 없음. SMS(coolSMS 등), 이메일, 앱 푸시(FCM) 중 선택 필요. Celery로 비동기 처리 가능하지만 설계가 명시돼야 함.</div>
+    </div>
+    <div class="miss-card" style="border-left:3px solid #BA7517">
+      <div class="miss-title"><span class="sev sev-m">MEDIUM</span>음성 비언어 분석</div>
+      <div class="miss-body">서비스 핵심 차별점 중 하나. pyAudioAnalysis / librosa로 음높이·속도·음량 특성 추출 후 진단 에이전트에 투입하는 파이프라인 필요. 현재 어떤 역할에도 없음.</div>
+    </div>
+    <div class="miss-card" style="border-left:3px solid #BA7517">
+      <div class="miss-title"><span class="sev sev-m">MEDIUM</span>비접속 자동 감지</div>
+      <div class="miss-body">3일+ 스피커 미사용 시 보호자 알림 발송 로직. Celery Beat 스케줄러로 구현 가능하지만 DB 설계(마지막 접속 시각 저장)와 알림 임계값 정책이 명시돼야 함.</div>
+    </div>
+    <div class="miss-card" style="border-left:3px solid #BA7517">
+      <div class="miss-title"><span class="sev sev-m">MEDIUM</span>OTP/PIN 인증</div>
+      <div class="miss-body">노인용 서비스에서 일반 비밀번호는 취약점. 전화번호 기반 OTP 또는 PIN 4~6자리 인증으로 교체 필요. DB/보안 ③에 추가. 세션 토큰 만료 시간도 일반보다 길게 설정.</div>
+    </div>
+    <div class="miss-card" style="border-left:3px solid #3B6D11">
+      <div class="miss-title"><span class="sev sev-l">LOW</span>음성 원본 스토리지</div>
+      <div class="miss-body">음성 원본 저장 정책(S3 또는 MinIO), 암호화(AES-256), 감사 로그, 6개월 자동 삭제 Celery 태스크. 개인정보보호법상 생체정보 처리 별도 동의 및 보관 기간 명시 의무.</div>
+    </div>
+    <div class="miss-card" style="border-left:3px solid #3B6D11">
+      <div class="miss-title"><span class="sev sev-l">LOW</span>텍스트 폴백 UI</div>
+      <div class="miss-body">STT 실패(보청기·발음 불명확) 시 자동으로 텍스트 입력 모드 전환. 노인 접근성의 핵심. 프론트엔드 ④에 추가. 큰 버튼 + 단순 입력 UI 필요.</div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 3 전체 일정 -->
+<div id="p3" class="pn">
+  <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:14px">4인 기준 약 12주 일정 (주 단위). 병렬 진행 표시.</div>
+  <div class="gantt-wrap">
+    <table class="gantt">
+      <thead>
+        <tr>
+          <th>태스크</th>
+          <th>역할</th>
+          <th style="min-width:280px">W1&nbsp;&nbsp;W2&nbsp;&nbsp;W3&nbsp;&nbsp;W4&nbsp;&nbsp;W5&nbsp;&nbsp;W6&nbsp;&nbsp;W7&nbsp;&nbsp;W8&nbsp;&nbsp;W9&nbsp;&nbsp;W10&nbsp;W11&nbsp;W12</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="ph-header"><td colspan="3">Phase 1 · 기반 구축 (1~3주)</td></tr>
+        <tr><td>DB 스키마 설계</td><td>③</td><td><span class="bar" style="width:50px;margin-left:0px;background:#639922"></span></td></tr>
+        <tr><td>FastAPI 서버 + WebSocket</td><td>②</td><td><span class="bar" style="width:70px;margin-left:0px;background:#1D9E75"></span></td></tr>
+        <tr><td>JWT + OTP 인증</td><td>③</td><td><span class="bar" style="width:50px;margin-left:22px;background:#639922"></span></td></tr>
+        <tr><td>초기 프롬프트 설계</td><td>①</td><td><span class="bar" style="width:70px;margin-left:0px;background:#534AB7"></span></td></tr>
+        <tr><td>STT / TTS 파이프라인</td><td>②</td><td><span class="bar" style="width:70px;margin-left:22px;background:#E24B4A"></span></td></tr>
+
+        <tr class="ph-header"><td colspan="3">Phase 2 · 핵심 기능 (4~7주)</td></tr>
+        <tr><td>Claude API + 세션 관리</td><td>②</td><td><span class="bar" style="width:90px;margin-left:66px;background:#1D9E75"></span></td></tr>
+        <tr><td>진단 에이전트 구현</td><td>①</td><td><span class="bar" style="width:90px;margin-left:66px;background:#534AB7"></span></td></tr>
+        <tr><td>위기 감지 2단계 로직</td><td>①②</td><td><span class="bar" style="width:70px;margin-left:88px;background:#BA7517"></span></td></tr>
+        <tr><td>사용자 포털 UI</td><td>④</td><td><span class="bar" style="width:90px;margin-left:66px;background:#D85A30"></span></td></tr>
+        <tr><td>음성 비언어 분석</td><td>②</td><td><span class="bar" style="width:70px;margin-left:88px;background:#E24B4A"></span></td></tr>
+        <tr><td>음성 스토리지 + 암호화</td><td>③</td><td><span class="bar" style="width:70px;margin-left:66px;background:#639922"></span></td></tr>
+
+        <tr class="ph-header"><td colspan="3">Phase 3 · 포털 & 연동 (8~10주)</td></tr>
+        <tr><td>보호자 포털 UI</td><td>④</td><td><span class="bar" style="width:70px;margin-left:154px;background:#D85A30"></span></td></tr>
+        <tr><td>전문가 포털 UI</td><td>④</td><td><span class="bar" style="width:70px;margin-left:176px;background:#D85A30"></span></td></tr>
+        <tr><td>알림 시스템 (SMS/FCM)</td><td>②③</td><td><span class="bar" style="width:70px;margin-left:154px;background:#1D9E75"></span></td></tr>
+        <tr><td>비접속 감지 Celery Beat</td><td>③</td><td><span class="bar" style="width:50px;margin-left:176px;background:#639922"></span></td></tr>
+        <tr><td>Function Calling (119 연결)</td><td>①②</td><td><span class="bar" style="width:50px;margin-left:176px;background:#534AB7"></span></td></tr>
+
+        <tr class="ph-header"><td colspan="3">Phase 4 · 통합 테스트 & 배포 (11~12주)</td></tr>
+        <tr><td>전체 통합 테스트</td><td>전원</td><td><span class="bar" style="width:46px;margin-left:220px;background:#888780"></span></td></tr>
+        <tr><td>보안 점검 · HTTPS 배포</td><td>③</td><td><span class="bar" style="width:46px;margin-left:242px;background:#E24B4A"></span></td></tr>
+        <tr><td>노인 사용성 테스트</td><td>전원</td><td><span class="bar" style="width:46px;margin-left:242px;background:#888780"></span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TAB 4 Critical Path -->
+<div id="p4" class="pn">
+  <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:18px">뭐부터 시작해야 하는지 — 이전 단계가 완료돼야 다음이 가능한 순서.</div>
+  <div class="cp-list">
+
+    <div class="cp-item">
+      <div class="cp-left"><div class="cp-circle" style="border-color:#534AB7;color:#534AB7">1</div><div class="cp-line" style="background:#534AB7;opacity:.25"></div></div>
+      <div class="cp-content">
+        <div class="cp-title">DB 스키마 설계 + FastAPI 기본 서버</div>
+        <div class="cp-desc">모든 기능의 토대. 사용자 테이블, 세션 테이블, 진단 이력 테이블, RBAC 권한 테이블을 먼저 확정해야 이후 모든 API가 흔들리지 않음. ③④ 동시 시작.</div>
+        <div class="cp-tags"><span class="ctag">③ DB 설계</span><span class="ctag">② FastAPI 서버</span><span class="ctag">1~2주</span></div>
+      </div>
+    </div>
+
+    <div class="cp-item">
+      <div class="cp-left"><div class="cp-circle" style="border-color:#E24B4A;color:#E24B4A">2</div><div class="cp-line" style="background:#E24B4A;opacity:.25"></div></div>
+      <div class="cp-content">
+        <div class="cp-title">STT / TTS 파이프라인 + WebSocket 연결</div>
+        <div class="cp-desc">스피커 기반 서비스의 핵심 파이프라인. 음성→텍스트→LLM→텍스트→음성 흐름이 동작해야 나머지 모든 AI 기능을 테스트할 수 있음. 이게 없으면 Claude API 연동 테스트도 불가.</div>
+        <div class="cp-tags"><span class="ctag">② STT/TTS</span><span class="ctag">② WebSocket</span><span class="ctag">2~3주</span></div>
+      </div>
+    </div>
+
+    <div class="cp-item">
+      <div class="cp-left"><div class="cp-circle" style="border-color:#1D9E75;color:#1D9E75">3</div><div class="cp-line" style="background:#1D9E75;opacity:.25"></div></div>
+      <div class="cp-content">
+        <div class="cp-title">OTP/PIN 인증 + Claude API 기본 연동</div>
+        <div class="cp-desc">사용자 인증 없이는 세션 관리가 불가. 노인 친화적 OTP 인증 먼저 구현. 동시에 Claude API 기본 연동 테스트(프롬프트 in → 응답 out). 이 단계에서 첫 번째 "말하고 대답 듣기" 데모 가능.</div>
+        <div class="cp-tags"><span class="ctag">③ OTP 인증</span><span class="ctag">② Claude API</span><span class="ctag">① 기본 프롬프트</span><span class="ctag">3~4주</span></div>
+      </div>
+    </div>
+
+    <div class="cp-item">
+      <div class="cp-left"><div class="cp-circle" style="border-color:#534AB7;color:#534AB7">4</div><div class="cp-line" style="background:#534AB7;opacity:.25"></div></div>
+      <div class="cp-content">
+        <div class="cp-title">진단 에이전트 + 프롬프트 라우팅 순환 구조</div>
+        <div class="cp-desc">PHQ-9 점수 → 진단 → 프롬프트 조정 → 대화 → 요약 → 재진단의 순환 루프. 이게 완성돼야 "AI가 상태에 맞게 대화한다"는 핵심 가치 제안이 작동함. 병행: 사용자 UI MVP.</div>
+        <div class="cp-tags"><span class="ctag">① 진단 에이전트</span><span class="ctag">④ 사용자 UI</span><span class="ctag">4~6주</span></div>
+      </div>
+    </div>
+
+    <div class="cp-item">
+      <div class="cp-left"><div class="cp-circle" style="border-color:#BA7517;color:#BA7517">5</div><div class="cp-line" style="background:#BA7517;opacity:.25"></div></div>
+      <div class="cp-content">
+        <div class="cp-title">위기 감지 2단계 로직 + Function Calling</div>
+        <div class="cp-desc">score 계산 → 분기(확인 질문 / 보호자 알림 / 119 연결). 법적·윤리적으로 반드시 오탐 방지 로직이 있어야 서비스 공개 가능. 이 기능 없이 배포하면 안 됨.</div>
+        <div class="cp-tags"><span class="ctag">① 위기 로직</span><span class="ctag">② Function Calling</span><span class="ctag">6~8주</span></div>
+      </div>
+    </div>
+
+    <div class="cp-item">
+      <div class="cp-left"><div class="cp-circle" style="border-color:#D85A30;color:#D85A30">6</div><div class="cp-line" style="background:#D85A30;opacity:.25"></div></div>
+      <div class="cp-content">
+        <div class="cp-title">보호자 포털 + 알림 시스템</div>
+        <div class="cp-desc">경쟁사 6곳 전무한 차별점. B2G 영업 시 "보호자가 확인할 수 있다"는 데모가 핵심. 주간 리포트 UI + SMS/FCM 알림 발송. 비접속 Celery Beat 태스크도 여기서 완성.</div>
+        <div class="cp-tags"><span class="ctag">④ 보호자 포털</span><span class="ctag">②③ 알림</span><span class="ctag">8~10주</span></div>
+      </div>
+    </div>
+
+    <div class="cp-item">
+      <div class="cp-left"><div class="cp-circle" style="border-color:#888780;color:#888780">7</div><div class="cp-line" style="background:none"></div></div>
+      <div class="cp-content">
+        <div class="cp-title">전문가 포털 + 통합 테스트 + 배포</div>
+        <div class="cp-desc">지자체 공무원·복지사 대시보드. 고위험군 목록, 개입 기록, 보고서 자동 생성. 이후 전원이 참여하는 통합 테스트(실제 노인 사용자 대상 포함) → HTTPS 배포 → 지자체 데모.</div>
+        <div class="cp-tags"><span class="ctag">④ 전문가 포털</span><span class="ctag">③ 보안·배포</span><span class="ctag">10~12주</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
 
 <script>
-const secs = document.querySelectorAll('section[id]');
-const links = document.querySelectorAll('.nav-link');
-const io = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      links.forEach(l => l.classList.remove('active'));
-      const a = document.querySelector(`.nav-link[href="#${e.target.id}"]`);
-      if (a) a.classList.add('active');
-    }
-  });
-}, { rootMargin: '-12% 0px -78% 0px' });
-secs.forEach(s => io.observe(s));
+function sw(btn,id){
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.pn').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById(id).classList.add('on');
+}
 </script>
-</body>
-</html>
